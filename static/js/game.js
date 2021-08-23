@@ -34,7 +34,7 @@ let stepEnemy = x > y ? y * 0.065 : x * 0.065;
 let enemiesTexture = [];
 let enemiesInterval = null;
 let deathEnemyCount = 0;
-
+let highscore = JSON.parse(localStorage.getItem('highscore'));
 let shieldTexture = new PIXI.Texture.from(spritePath + "shield3.png");
 let playerTexture = PIXI.Texture.from(spritePath + "playerShip1_red.png");
 let bulletTexture = PIXI.Texture.from(spritePath + "laserRed03.png");
@@ -263,13 +263,14 @@ app.ticker.add(function(){
         }
         if(hitTestCircle(e,shield)){
             console.log("Shiled");
-            shield.maxEnergy -= 10;
-            app.stage.removeChild(e);
-            ret = false;
-            energyCounter.counter.width = shield.maxEnergy * energyStep;
             if(shield.maxEnergy <= 0){
                 stop();
             }
+            shield.maxEnergy -= 35;
+            app.stage.removeChild(e);
+            ret = false;
+            energyCounter.counter.width = shield.maxEnergy * energyStep;
+            
         }
         
         return ret;
@@ -367,18 +368,24 @@ function stop(){
     clearInterval(player.intervalId);
     clearInterval(enemiesInterval);
     //player.bullets=null;
-    enemies=null;
-    player=null;
+    enemies=[];
+    player.x=x*10;
+    player.y=y*10;
+
     app.stage.removeChildren();
-    document.removeEventListener("keydown", function(){console.log("Clear keydown event")});
-    document.removeEventListener("keyup", function(){console.log("Clear keyup event")});
+   // document.removeEventListener("keydown", function(){console.log("Clear keydown event")});
+    //document.removeEventListener("keyup", function(){console.log("Clear keyup event")});
     let goText = new PIXI.Text("GAME OVER", style);
     goText.anchor.set(0.5);
     goText.x = x * 0.5;
     goText.y = y * 0.5;
     app.stage.addChild(goText);
+    if(deathEnemyCount > highscore){
+        console.log("BİG");
+        localStorage.setItem('highscore', JSON.stringify(deathEnemyCount));
+    }
     setTimeout(function(){
-        window.location.href = "../index.html";
+        window.location.assign("../index.html")  ;
     }, 3000);
 
 }
